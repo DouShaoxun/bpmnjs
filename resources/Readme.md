@@ -1,14 +1,5 @@
 # Activiti7整合BPMN-JS说明
-
-
-### 解压慕课网git仓库根目录下bpmnjs汉化包，并资源拷贝到以下路径
- ```
-https://git.imooc.com/coding-454/activiti7_workflow
-bpmnjs初始化.zip
-resources/resources/bpmnjs/resources
- ```
-
-### 打开/app/index.js   camunda不是bpmn
+### 打开/app/index.js 
 ### 注释以下内容
  ```
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
