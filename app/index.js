@@ -2,8 +2,12 @@ import $ from 'jquery';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
 import propertiesPanelModule from 'bpmn-js-properties-panel';
-import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
-import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
+// import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda';
+// import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json';
+import propertiesProviderModule from '../resources/properties-panel/provider/activiti';
+import activitiModdleDescriptor from '../resources/activiti.json';
+import customTranslate from '../resources/customTranslate/customTranslate';
+import customControlsModule from '../resources/customControls';
 
 import {
   debounce
@@ -16,6 +20,25 @@ var container = $('#js-drop-zone');
 
 var canvas = $('#js-canvas');
 
+// var bpmnModeler = new BpmnModeler({
+//   container: canvas,
+//   propertiesPanel: {
+//     parent: '#js-properties-panel'
+//   },
+//   additionalModules: [
+//     propertiesPanelModule,
+//     propertiesProviderModule
+//   ],
+//   moddleExtensions: {
+//     camunda: camundaModdleDescriptor
+//   }
+// });
+
+
+// 添加翻译组件
+var customTranslateModule = {
+  translate: ['value', customTranslate]
+};
 var bpmnModeler = new BpmnModeler({
   container: canvas,
   propertiesPanel: {
@@ -23,12 +46,15 @@ var bpmnModeler = new BpmnModeler({
   },
   additionalModules: [
     propertiesPanelModule,
-    propertiesProviderModule
+    propertiesProviderModule,
+    customControlsModule,
+    customTranslateModule
   ],
   moddleExtensions: {
-    camunda: camundaModdleDescriptor
+    activiti: activitiModdleDescriptor
   }
 });
+
 container.removeClass('with-diagram');
 
 function createNewDiagram() {
@@ -68,7 +94,7 @@ function registerFileDrop(container, callback) {
 
     var reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
 
       var xml = e.target.result;
 
@@ -103,9 +129,9 @@ if (!window.FileList || !window.FileReader) {
 
 // bootstrap diagram functions
 
-$(function() {
+$(function () {
 
-  $('#js-create-diagram').click(function(e) {
+  $('#js-create-diagram').click(function (e) {
     e.stopPropagation();
     e.preventDefault();
 
@@ -115,7 +141,7 @@ $(function() {
   var downloadLink = $('#js-download-diagram');
   var downloadSvgLink = $('#js-download-svg');
 
-  $('.buttons a').click(function(e) {
+  $('.buttons a').click(function (e) {
     if (!$(this).is('.active')) {
       e.preventDefault();
       e.stopPropagation();
@@ -135,11 +161,13 @@ $(function() {
     }
   }
 
-  var exportArtifacts = debounce(async function() {
+  var exportArtifacts = debounce(async function () {
 
     try {
 
-      const { svg } = await bpmnModeler.saveSVG();
+      const {
+        svg
+      } = await bpmnModeler.saveSVG();
 
       setEncoded(downloadSvgLink, 'diagram.svg', svg);
     } catch (err) {
@@ -151,7 +179,11 @@ $(function() {
 
     try {
 
-      const { xml } = await bpmnModeler.saveXML({ format: true });
+      const {
+        xml
+      } = await bpmnModeler.saveXML({
+        format: true
+      });
 
       setEncoded(downloadLink, 'diagram.bpmn', xml);
     } catch (err) {
